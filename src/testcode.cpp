@@ -82,15 +82,8 @@ void path_callback(const nav_msgs::Path& path_data){
     }
 }
 
-/*
-bool map_service_callback(std_srvs::GetMap::Request &get_map,nav_msgs::GetMap::Response &return_map){
-    
-    return_map.map=map_array.at(0);
-    return true;
-}*/
-
 int main(int argc, char **argv){
-    ros::init(argc, argv, "map_selecter");
+    ros::init(argc, argv, "testcode");
     ros::NodeHandle n;
     
     ros::NodeHandle lSubscriber("");
