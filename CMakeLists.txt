@@ -7,6 +7,7 @@ find_package(catkin REQUIRED
     std_msgs
     nav_msgs
     geometry_msgs
+    tf
 )
 
 catkin_package(
@@ -20,3 +21,6 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+
+add_executable(map_selecter src/map_selecter.cpp)
+target_link_libraries(map_selecter ${catkin_LIBRARIES})
