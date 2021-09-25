@@ -10,17 +10,35 @@
 #include "Vector.h"
 #include "tf_lis.h"
 using namespace std;
-const int select_maps =5;
+const int select_maps = 6;
 
 vector<nav_msgs::OccupancyGrid> map_array(select_maps);
 
 std_msgs::Int32 map_num;
+bool map_chenge_flag = false;
+int now_wp = 0;
+nav_msgs::Path wp_path;
+Vector now_wp_vec;
+Vector next_wp_vec;
 
-void map_callback0(const nav_msgs::OccupancyGrid& map){ map_array.at(0)=map;}
-void map_callback1(const nav_msgs::OccupancyGrid& map){ map_array.at(1)=map;}
-void map_callback2(const nav_msgs::OccupancyGrid& map){ map_array.at(2)=map;}
-void map_callback3(const nav_msgs::OccupancyGrid& map){ map_array.at(3)=map;}
-void map_callback4(const nav_msgs::OccupancyGrid& map){ map_array.at(4)=map;}
+void map_callback0(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(0) = map;
+}
+void map_callback1(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(1) = map;
+}
+void map_callback2(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(2) = map;
+}
+void map_callback3(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(3) = map;
+}
+void map_callback4(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(4) = map;
+}
+void map_callback5(const nav_msgs::OccupancyGrid& map) {
+    map_array.at(5) = map;
+}
 
 geometry_msgs::PoseWithCovarianceStamped vec_to_PoseWithCovarianceStamped(Vector pos) {
     geometry_msgs::PoseWithCovarianceStamped initial_pose;
@@ -52,7 +70,6 @@ Vector Pose_to_vec(geometry_msgs::Pose pose){
     return ret_vec;
 }
 
-bool map_chenge_flag=false;
 void int_callback(const std_msgs::Int32& int_data){
     if(map_num.data!=int_data.data){
         map_num=int_data;
@@ -60,14 +77,10 @@ void int_callback(const std_msgs::Int32& int_data){
     }
 }
 
-int now_wp=0;
 void wp_callback(const std_msgs::Int32& wp_data){
     now_wp=wp_data.data;
 }
 
-nav_msgs::Path wp_path;
-Vector now_wp_vec;
-Vector next_wp_vec;
 void path_callback(const nav_msgs::Path& path_data){
     wp_path=path_data;
     
@@ -85,7 +98,7 @@ bool map_service_callback(std_srvs::GetMap::Request &get_map,nav_msgs::GetMap::R
 }*/
 
 int main(int argc, char **argv){
-    ros::init(argc, argv, "map_selecter");
+    ros::init(argc, argv, "map_switching");
     ros::NodeHandle n;
     
     ros::NodeHandle lSubscriber("");
@@ -95,8 +108,10 @@ int main(int argc, char **argv){
     ros::Subscriber map_sub2 = lSubscriber.subscribe("/map2", 50, map_callback2);
     ros::Subscriber map_sub3 = lSubscriber.subscribe("/map3", 50, map_callback3);
     ros::Subscriber map_sub4 = lSubscriber.subscribe("/map4", 50, map_callback4);
+    ros::Subscriber map_sub5 = lSubscriber.subscribe("/map5", 50, map_callback5);
 
-    map_num.data=0;
+    map_num.data = 0;
+
     ros::Subscriber int_sub = lSubscriber.subscribe("/map_num", 50, int_callback);
     ros::Subscriber wp_sub = lSubscriber.subscribe("/now_wp", 50, wp_callback);
     ros::Subscriber path_sub = lSubscriber.subscribe("/wp_path", 50, path_callback);
@@ -111,20 +126,19 @@ int main(int argc, char **argv){
     //Map　publisher
     ros::Publisher map_pub = n.advertise<nav_msgs::OccupancyGrid>("/map", 10);
     ros::ServiceClient map_client = n.serviceClient<nav_msgs::SetMap>("set_map");
+
     while (n.ok())  {
         lidar_tf.update();
         if(map_chenge_flag){
             nav_msgs::SetMap set_map;
-            //Vector def_pose(0,0,0);
-            //initial poseの計算
-            
-            Vector diff_vec=lidar_tf.pos-now_wp_vec;
-            double diff_rad=next_wp_vec.yaw-now_wp_vec.yaw;
-            diff_vec=diff_vec.rad_rot(diff_rad);
-            Vector new_vec=next_wp_vec+diff_vec;
-            new_vec.yaw=lidar_tf.pos.yaw+diff_rad;
-            set_map.request.initial_pose=vec_to_PoseWithCovarianceStamped(new_vec);
-            set_map.request.map=map_array.at(map_num.data);
+           
+            Vector diff_vec = lidar_tf.pos - now_wp_vec;
+            double diff_rad = next_wp_vec.yaw - now_wp_vec.yaw;
+            diff_vec = diff_vec.rad_rot(diff_rad);
+            Vector new_vec = next_wp_vec + diff_vec;
+            new_vec.yaw = lidar_tf.pos.yaw + diff_rad;
+            set_map.request.initial_pose = vec_to_PoseWithCovarianceStamped(new_vec);
+            set_map.request.map = map_array.at(map_num.data);
             if(map_client.call(set_map)){
                 ROS_INFO("MAP IS CHENGED!! MAP NUMBER[%d]",map_num.data);
                 std_msgs::Empty map_chenged_data;
@@ -138,6 +152,5 @@ int main(int argc, char **argv){
         map_pub.publish(map_array.at(map_num.data));
         ros::spinOnce();
         loop_rate.sleep();
-        
     }
 }
