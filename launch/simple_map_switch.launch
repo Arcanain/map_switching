@@ -1,17 +1,11 @@
 <launch>
-   <arg name="map_file0" default="$(find map_switching)/maps/tsukuba/map1.yaml" />
-   <arg name="map_file1" default="$(find map_switching)/maps/tsukuba/map2.yaml" />
-   <arg name="map_file2" default="$(find map_switching)/maps/tsukuba/map3.yaml" />
-   <arg name="map_file3" default="$(find map_switching)/maps/tsukuba/map4.yaml" />
-   <arg name="map_file4" default="$(find map_switching)/maps/tsukuba/map5.yaml" />
-   <arg name="map_file5" default="$(find map_switching)/maps/tsukuba/map6.yaml" />
-
-<!--    <node pkg="tf" type="static_transform_publisher" name="rs_odom_transform" args="0 0 0 0 0 0 rs_odom rs_odom_frame 100"/>-->
-<!--	<node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser" args="0.225 -0.255 0.0 0.0 0.0 0.0 camera_link 2d_blue 100"/>
-	<node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser2" args="-0.485 0.255 0.0 3.14159 0.0 0.0 camera_link 2d_orange 100"/>-->	
-	<!--<node pkg="tf" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 map base_link 100"/>-->
-<!--	<node pkg="tf" type="static_transform_publisher" name="base_transform" args="0 0 0 0 0 0 base_link camera_link 100"/>-->
-<!--	<node pkg="tf" type="static_transform_publisher" name="rs_base_link_transform" args="-0.2 0 0 0 0 0 rs_link rs_camera_link 100"/>-->
+    <!-- map fata -->
+    <arg name="map_file0" default="$(find map_switching)/maps/tsukuba/map1.yaml" />
+    <arg name="map_file1" default="$(find map_switching)/maps/tsukuba/map2.yaml" />
+    <arg name="map_file2" default="$(find map_switching)/maps/tsukuba/map3.yaml" />
+    <arg name="map_file3" default="$(find map_switching)/maps/tsukuba/map4.yaml" />
+    <arg name="map_file4" default="$(find map_switching)/maps/tsukuba/map5.yaml" />
+    <arg name="map_file5" default="$(find map_switching)/maps/tsukuba/map6.yaml" />
     
     <node pkg="tf" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 map base_link 100"/>
 
@@ -40,9 +34,8 @@
         <remap from="/static_map" to="/static_map5" />
     </node>
 
-	<!--<node pkg="map_switching" type="map_selecter" name="map_selecter" output="screen"/>-->
-
-    <node pkg="map_switching" type="testcode" name="testcode" output="screen"/>
+    <!-- simple_map_switch -->
+    <node pkg="map_switching" type="simple_map_switch" name="simple_map_switch" output="screen"/>
 
     <!-- rviz -->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find map_switching)/rviz/map_switching.rviz"/>

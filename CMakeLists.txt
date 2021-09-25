@@ -25,5 +25,5 @@ include_directories(
 add_executable(map_selecter src/map_selecter.cpp)
 target_link_libraries(map_selecter ${catkin_LIBRARIES})
 
-add_executable(testcode src/testcode.cpp)
-target_link_libraries(testcode ${catkin_LIBRARIES})
+add_executable(simple_map_switch src/simple_map_switch.cpp)
+target_link_libraries(simple_map_switch ${catkin_LIBRARIES})
