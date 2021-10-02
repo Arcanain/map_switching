@@ -1,0 +1,11 @@
+<launch>
+    
+    <!--<node pkg="tf" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 map base_link 100"/>-->
+    <!-- simple_map_switch -->
+    <!--<node pkg="map_switching" type="simple_map_switch" name="simple_map_switch" output="screen"/>-->
+    <node pkg="map_switching" type="Test" name="Test" output="screen"/>
+    
+    <node pkg="map_switching" type="map_to_baselink_tf" name="map_to_baselink_tf" output="screen"/>
+    <!-- rviz -->
+    <!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find map_switching)/rviz/map_switching.rviz"/>-->
+</launch>

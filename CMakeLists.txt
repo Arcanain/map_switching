@@ -30,3 +30,6 @@ target_link_libraries(simple_map_switch ${catkin_LIBRARIES})
 
 add_executable(Test src/Test.cpp)
 target_link_libraries(Test ${catkin_LIBRARIES})
+
+add_executable(map_to_baselink_tf src/map_to_baselink_tf.cpp)
+target_link_libraries(map_to_baselink_tf ${catkin_LIBRARIES})

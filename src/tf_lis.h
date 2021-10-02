@@ -36,8 +36,8 @@ tf_lis::tf_lis(const char *base_id,const char *child_id):listener(ros::Duration(
 }
 
 Vector tf_lis::update(){
-    
-     try {
+    listener.waitForTransform(tf_name2, tf_name1, ros::Time(0), ros::Duration(3.0));
+    try {
         listener.lookupTransform(tf_name2, tf_name1,ros::Time(0), trans_slam);
         pos.x = trans_slam.getOrigin().x();
         pos.y= trans_slam.getOrigin().y();
