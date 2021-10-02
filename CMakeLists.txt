@@ -27,3 +27,6 @@ target_link_libraries(map_switching ${catkin_LIBRARIES})
 
 add_executable(simple_map_switch src/simple_map_switch.cpp)
 target_link_libraries(simple_map_switch ${catkin_LIBRARIES})
+
+add_executable(Test src/Test.cpp)
+target_link_libraries(Test ${catkin_LIBRARIES})
