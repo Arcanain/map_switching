@@ -26,6 +26,8 @@ vector<nav_msgs::OccupancyGrid> map_array(select_maps);
 
 std_msgs::Int32 map_num;
 
+geometry_msgs::Pose current_robot_pose;
+
 /*
 // Description for a single map cell.
 typedef struct
@@ -146,12 +148,13 @@ void map_callback2(const nav_msgs::OccupancyGrid& map_msg) {
     //map.info.origin.position.y = map0_origin_y + map0_final_origin_y + map1_final_origin_y;
     //map.info.origin.position.x = map_msg.info.origin.position.x + 203.174;
     //map.info.origin.position.y = map_msg.info.origin.position.y - 82.518;
-    //map.info.origin.position.x = 203.174;
-    //map.info.origin.position.y = -82.518;
-    map.info.origin.position.z = 0;
-    map.info.origin.orientation.x = 0;
-    map.info.origin.orientation.y = 0;
-    map.info.origin.orientation.z = 0;
+    map.info.origin.position.x = current_robot_pose.position.x;
+    map.info.origin.position.y = current_robot_pose.position.y;
+    map.info.origin.position.z = current_robot_pose.position.z;
+    map.info.origin.orientation.x = current_robot_pose.orientation.x;
+    map.info.origin.orientation.y = current_robot_pose.orientation.y;
+    map.info.origin.orientation.z = current_robot_pose.orientation.z;
+    map.info.origin.orientation.w = current_robot_pose.orientation.w;
     //map.info.origin.orientation.w = map_msg.info.origin.orientation.z - 0.721927;
     //map.info.origin.orientation.w = map0_orientation_z + map0_final_orientation_z + map1_final_orientation_z;
     map.data = map_msg.data;
@@ -267,12 +270,14 @@ geometry_msgs::PoseWithCovarianceStamped vec_to_PoseWithCovarianceStamped(Vector
     return initial_pose;
 }
 
-void tf_callback(const tf2_msgs::TFMessage &msg) {
-
-}
-
 void map_to_baselink_callback(const geometry_msgs::Pose &msg) {
-
+    current_robot_pose.position.x = msg.position.x;
+    current_robot_pose.position.y = msg.position.y;
+    current_robot_pose.position.z = msg.position.z;
+    current_robot_pose.orientation.x = msg.orientation.x;
+    current_robot_pose.orientation.y = msg.orientation.y;
+    current_robot_pose.orientation.z = msg.orientation.z;
+    current_robot_pose.orientation.w = msg.orientation.w;
 }
 
 int main(int argc, char **argv){
