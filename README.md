@@ -10,6 +10,14 @@ roslaunch laser_scan_matcher_navigation navigation.launch
 roslaunch map_switching map_switching.launch
 ```
 
+メインで使用することになるであろうファイル
+
+- launch file  
+map_switching.launch
+
+- cpp file  
+map_switching.cpp
+
 # rviz
 
 https://user-images.githubusercontent.com/52307432/135744848-c33fc9d8-6f76-4979-a3b7-a47bb094b363.MOV
