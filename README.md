@@ -1,0 +1,11 @@
+# map_switching
+
+mapを切り替えられるかどうかの確認(ただし、実際の切り替えとは少々異なる)
+
+```bash
+sudo chmod 666 /dev/ttyUSB0
+source devel/setup.bash
+roslaunch laser_scan_matcher_navigation navigation.launch
+roslaunch map_switching map_switching.launch
+```
+
