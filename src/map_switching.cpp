@@ -16,6 +16,8 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+#define DEBUG_ON
+
 using namespace std;
 
 const int select_maps = 6;
@@ -32,6 +34,36 @@ float switching_waypoint_y;
 float switching_waypoint_w;
 bool map_chenge_flag[6] = {true, false, false, false, false, false};
 
+nav_msgs::OccupancyGrid map_reconstruction(nav_msgs::OccupancyGrid map_msg) {
+    nav_msgs::OccupancyGrid map;
+    
+    map.info.map_load_time = ros::Time::now();
+    map.info.width = map_msg.info.width;
+    map.info.height = map_msg.info.height;
+    map.info.resolution = map_msg.info.resolution;
+    
+    map.info.origin.position.x = current_robot_pose.position.x;
+    map.info.origin.position.y = current_robot_pose.position.y;
+    map.info.origin.position.z = current_robot_pose.position.z;
+    map.info.origin.orientation.x = current_robot_pose.orientation.x;
+    map.info.origin.orientation.y = current_robot_pose.orientation.y;
+    map.info.origin.orientation.z = current_robot_pose.orientation.z;
+    map.info.origin.orientation.w = current_robot_pose.orientation.w;
+    
+    /*
+    map.info.origin.position.x = current_robot_pose.position.x;
+    map.info.origin.position.y = current_robot_pose.position.y;
+    map.info.origin.position.z = current_robot_pose.position.z;
+    map.info.origin.orientation.x = current_robot_pose.orientation.x;
+    map.info.origin.orientation.y = current_robot_pose.orientation.y;
+    map.info.origin.orientation.z = -0.5;
+    map.info.origin.orientation.w = 0.1;
+    */
+    map.data = map_msg.data;
+
+    return map;
+}
+
 // map0
 void map_callback0(const nav_msgs::OccupancyGrid& map_msg) {
     map_array.at(0) = map_msg;
@@ -39,112 +71,27 @@ void map_callback0(const nav_msgs::OccupancyGrid& map_msg) {
 
 // map1
 void map_callback1(const nav_msgs::OccupancyGrid& map_msg) {
-    nav_msgs::OccupancyGrid map;
-    
-    map.info.map_load_time = ros::Time::now();
-    map.info.width = map_msg.info.width;
-    map.info.height = map_msg.info.height;
-    map.info.resolution = map_msg.info.resolution;
-    
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-
-    map.data = map_msg.data;
-
-    map_array.at(1) = map;
+    map_array.at(1) = map_reconstruction(map_msg);
 }
 
 //map2
 void map_callback2(const nav_msgs::OccupancyGrid& map_msg) {
-    nav_msgs::OccupancyGrid map;
-    
-    map.info.map_load_time = ros::Time::now();
-    map.info.width = map_msg.info.width;
-    map.info.height = map_msg.info.height;
-    map.info.resolution = map_msg.info.resolution;
-
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-   
-    map.data = map_msg.data;
-
-    map_array.at(2) = map;
+    map_array.at(2) = map_reconstruction(map_msg);
 }
 
 //map3
 void map_callback3(const nav_msgs::OccupancyGrid& map_msg) {
-    nav_msgs::OccupancyGrid map;
-    
-    map.info.map_load_time = ros::Time::now();
-    map.info.width = map_msg.info.width;
-    map.info.height = map_msg.info.height;
-    map.info.resolution = map_msg.info.resolution;
-
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-   
-    map.data = map_msg.data;
-
-    map_array.at(3) = map;
+    map_array.at(3) = map_reconstruction(map_msg);
 }
 
 //map4
 void map_callback4(const nav_msgs::OccupancyGrid& map_msg) {
-    nav_msgs::OccupancyGrid map;
-    
-    map.info.map_load_time = ros::Time::now();
-    map.info.width = map_msg.info.width;
-    map.info.height = map_msg.info.height;
-    map.info.resolution = map_msg.info.resolution;
-
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-  
-    map.data = map_msg.data;
-
-    map_array.at(4) = map;
+    map_array.at(4) = map_reconstruction(map_msg);
 }
 
 //map5
 void map_callback5(const nav_msgs::OccupancyGrid& map_msg) {
-    nav_msgs::OccupancyGrid map;
-    
-    map.info.map_load_time = ros::Time::now();
-    map.info.width = map_msg.info.width;
-    map.info.height = map_msg.info.height;
-    map.info.resolution = map_msg.info.resolution;
-
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-
-    map.data = map_msg.data;
-
-    map_array.at(5) = map;
+    map_array.at(5) = map_reconstruction(map_msg);
 }
 
 double geometry_quat_to_yaw(geometry_msgs::Quaternion geometry_quat){
@@ -178,6 +125,16 @@ geometry_msgs::PoseWithCovarianceStamped vec_to_PoseWithCovarianceStamped(Vector
 }
 
 void map_to_baselink_callback(const geometry_msgs::Pose &msg) {
+    /*
+    current_robot_pose.position.x = msg.position.x;
+    current_robot_pose.position.y = msg.position.y;
+    current_robot_pose.position.z = msg.position.z;
+    current_robot_pose.orientation.x = msg.orientation.x;
+    current_robot_pose.orientation.y = msg.orientation.y;
+    current_robot_pose.orientation.z = msg.orientation.z;
+    current_robot_pose.orientation.w = msg.orientation.w;
+     */
+    
     current_robot_pose.position.x = msg.position.x;
     current_robot_pose.position.y = msg.position.y;
     current_robot_pose.position.z = msg.position.z;
@@ -214,10 +171,10 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "map_swithing");
 
     ros::NodeHandle n;
+
     ros::Publisher map_pub = n.advertise<nav_msgs::OccupancyGrid>("/map", 10);
     ros::Subscriber map_to_baselink_tf_sub = n.subscribe("/map_to_base_link", 50, map_to_baselink_callback);
     ros::Subscriber waypoint_sub = n.subscribe("/waypoint", 10, waypoint_callback);
-    ros::ServiceClient map_client = n.serviceClient<nav_msgs::SetMap>("set_map");
 
     ros::NodeHandle lSubscriber("");
 
@@ -228,51 +185,48 @@ int main(int argc, char **argv){
     ros::Subscriber map_sub4 = lSubscriber.subscribe("/map4", 50, map_callback4);
     ros::Subscriber map_sub5 = lSubscriber.subscribe("/map5", 50, map_callback5);
 
-    //Now wp publisher
-    ros::Publisher map_chenged_pub = n.advertise<std_msgs::Empty>("map_chenged", 10);
-
     map_num.data = 0;
-    int count = 0;
+
     ros::Rate loop_rate(50);
 
     while (n.ok()) {
-        /*
-        map_pub.publish(map_array.at(0));
-        map_pub.publish(map_array.at(1));
-        map_pub.publish(map_array.at(2));
-        map_pub.publish(map_array.at(3));
-        map_pub.publish(map_array.at(4));
-        map_pub.publish(map_array.at(5));
-        */
-       
-        if (map_chenge_flag[0] == true) 
-        {
+        
+        // referrence : https://monozukuri-c.com/langc-ifdef/
+        #ifdef DEBUG_ON
             map_pub.publish(map_array.at(0));
-        } 
-        else if (map_chenge_flag[1] == true) 
-        {
             map_pub.publish(map_array.at(1));
-        } 
-        else if (map_chenge_flag[2] == true) 
-        {
             map_pub.publish(map_array.at(2));
-        } 
-        else if (map_chenge_flag[3] == true) 
-        {
             map_pub.publish(map_array.at(3));
-        } 
-        else if (map_chenge_flag[4] == true) 
-        {
             map_pub.publish(map_array.at(4));
-        } 
-        else if (map_chenge_flag[5] == true) 
-        {
             map_pub.publish(map_array.at(5));
-        }
+        #else
+            if (map_chenge_flag[0] == true) 
+            {
+                map_pub.publish(map_array.at(0));
+            } 
+            else if (map_chenge_flag[1] == true) 
+            {
+                map_pub.publish(map_array.at(1));
+            } 
+            else if (map_chenge_flag[2] == true) 
+            {
+                map_pub.publish(map_array.at(2));
+            } 
+            else if (map_chenge_flag[3] == true) 
+            {
+                map_pub.publish(map_array.at(3));
+            } 
+            else if (map_chenge_flag[4] == true) 
+            {
+                map_pub.publish(map_array.at(4));
+            } 
+            else if (map_chenge_flag[5] == true) 
+            {
+                map_pub.publish(map_array.at(5));
+            }
+        #endif
 
         ros::spinOnce();
         loop_rate.sleep();
-
-        count++;
     }
 }
