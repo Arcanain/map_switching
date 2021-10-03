@@ -33,8 +33,17 @@ float switching_waypoint_x;
 float switching_waypoint_y;
 float switching_waypoint_w;
 bool map_chenge_flag[6] = {true, false, false, false, false, false};
+bool map_reconstraction_flag[6] = {false, false, false, false, false, false};
+geometry_msgs::Pose map_origin;
 
-nav_msgs::OccupancyGrid map_reconstruction(nav_msgs::OccupancyGrid map_msg) {
+ros::Publisher debug_map_to_baselink_pub;
+ros::Publisher debug_map1_pub;
+ros::Publisher debug_map2_pub;
+ros::Publisher debug_map3_pub;
+ros::Publisher debug_map4_pub;
+ros::Publisher debug_map5_pub;
+
+nav_msgs::OccupancyGrid map_reconstruction(nav_msgs::OccupancyGrid map_msg, bool reconstruction_flag) {
     nav_msgs::OccupancyGrid map;
     
     map.info.map_load_time = ros::Time::now();
@@ -42,23 +51,26 @@ nav_msgs::OccupancyGrid map_reconstruction(nav_msgs::OccupancyGrid map_msg) {
     map.info.height = map_msg.info.height;
     map.info.resolution = map_msg.info.resolution;
     
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = current_robot_pose.orientation.z;
-    map.info.origin.orientation.w = current_robot_pose.orientation.w;
-    
-    /*
-    map.info.origin.position.x = current_robot_pose.position.x;
-    map.info.origin.position.y = current_robot_pose.position.y;
-    map.info.origin.position.z = current_robot_pose.position.z;
-    map.info.origin.orientation.x = current_robot_pose.orientation.x;
-    map.info.origin.orientation.y = current_robot_pose.orientation.y;
-    map.info.origin.orientation.z = -0.5;
-    map.info.origin.orientation.w = 0.1;
-    */
+    // map原点の切り替えは各mapにつき一回のみでOK
+    if (reconstruction_flag == false) {
+        map.info.origin.position.x = current_robot_pose.position.x;
+        map.info.origin.position.y = current_robot_pose.position.y;
+        map.info.origin.position.z = current_robot_pose.position.z;
+        map.info.origin.orientation.x = current_robot_pose.orientation.x;
+        map.info.origin.orientation.y = current_robot_pose.orientation.y;
+        map.info.origin.orientation.z = current_robot_pose.orientation.z;
+        map.info.origin.orientation.w = current_robot_pose.orientation.w;
+
+        // map原点の保存
+        map_origin.position.x = map.info.origin.position.x;
+        map_origin.position.y = map.info.origin.position.y;
+        map_origin.position.z = map.info.origin.position.z;
+        map_origin.orientation.x = map.info.origin.orientation.x;
+        map_origin.orientation.y = map.info.origin.orientation.y;
+        map_origin.orientation.z = map.info.origin.orientation.z;
+        map_origin.orientation.w = map.info.origin.orientation.w;
+    }
+
     map.data = map_msg.data;
 
     return map;
@@ -71,27 +83,45 @@ void map_callback0(const nav_msgs::OccupancyGrid& map_msg) {
 
 // map1
 void map_callback1(const nav_msgs::OccupancyGrid& map_msg) {
-    map_array.at(1) = map_reconstruction(map_msg);
+    map_array.at(1) = map_msg;
+    /*nav_msgs::OccupancyGrid map;
+    map = map_reconstruction(map_msg);
+    map_array.at(1) = map;
+
+    geometry_msgs::Pose debug_origin_pose;
+    debug_origin_pose.position.x = map.info.origin.position.x;
+    debug_origin_pose.position.y = map.info.origin.position.y;
+    debug_origin_pose.position.z = map.info.origin.position.z;
+    debug_origin_pose.orientation.x = map.info.origin.orientation.x;
+    debug_origin_pose.orientation.y = map.info.origin.orientation.y;
+    debug_origin_pose.orientation.z = map.info.origin.orientation.z;
+    debug_origin_pose.orientation.w = map.info.origin.orientation.w;
+    debug_map1_pub.publish(debug_origin_pose);
+    */
 }
 
 //map2
 void map_callback2(const nav_msgs::OccupancyGrid& map_msg) {
-    map_array.at(2) = map_reconstruction(map_msg);
+    map_array.at(2) = map_msg;
+    //map_array.at(2) = map_reconstruction(map_msg);
 }
 
 //map3
 void map_callback3(const nav_msgs::OccupancyGrid& map_msg) {
-    map_array.at(3) = map_reconstruction(map_msg);
+    map_array.at(3) = map_msg;
+    //map_array.at(3) = map_reconstruction(map_msg);
 }
 
 //map4
 void map_callback4(const nav_msgs::OccupancyGrid& map_msg) {
-    map_array.at(4) = map_reconstruction(map_msg);
+    map_array.at(4) = map_msg;
+    //map_array.at(4) = map_reconstruction(map_msg);
 }
 
 //map5
 void map_callback5(const nav_msgs::OccupancyGrid& map_msg) {
-    map_array.at(5) = map_reconstruction(map_msg);
+    map_array.at(5) = map_msg;
+    //map_array.at(5) = map_reconstruction(map_msg);
 }
 
 double geometry_quat_to_yaw(geometry_msgs::Quaternion geometry_quat){
@@ -125,15 +155,6 @@ geometry_msgs::PoseWithCovarianceStamped vec_to_PoseWithCovarianceStamped(Vector
 }
 
 void map_to_baselink_callback(const geometry_msgs::Pose &msg) {
-    /*
-    current_robot_pose.position.x = msg.position.x;
-    current_robot_pose.position.y = msg.position.y;
-    current_robot_pose.position.z = msg.position.z;
-    current_robot_pose.orientation.x = msg.orientation.x;
-    current_robot_pose.orientation.y = msg.orientation.y;
-    current_robot_pose.orientation.z = msg.orientation.z;
-    current_robot_pose.orientation.w = msg.orientation.w;
-     */
     
     current_robot_pose.position.x = msg.position.x;
     current_robot_pose.position.y = msg.position.y;
@@ -142,6 +163,8 @@ void map_to_baselink_callback(const geometry_msgs::Pose &msg) {
     current_robot_pose.orientation.y = msg.orientation.y;
     current_robot_pose.orientation.z = msg.orientation.z;
     current_robot_pose.orientation.w = msg.orientation.w;
+
+    debug_map_to_baselink_pub.publish(current_robot_pose);
 }
 
 void waypoint_callback(const visualization_msgs::Marker &msg) {
@@ -167,12 +190,39 @@ void waypoint_callback(const visualization_msgs::Marker &msg) {
     }
 }
 
+nav_msgs::OccupancyGrid map_switch(nav_msgs::OccupancyGrid temp_map, bool reconstraction_flag, int map_num, int count) {
+    nav_msgs::OccupancyGrid map;
+    map = map_reconstruction(temp_map, reconstraction_flag);
+
+    if (count > 100) {
+        map_reconstraction_flag[map_num] = true;
+    }
+
+    if (reconstraction_flag == true) {
+        map.info.origin.position.x = map_origin.position.x;
+        map.info.origin.position.y = map_origin.position.y;
+        map.info.origin.position.z = map_origin.position.z;
+        map.info.origin.orientation.x = map_origin.orientation.x;
+        map.info.origin.orientation.y = map_origin.orientation.y;
+        map.info.origin.orientation.z = map_origin.orientation.z;
+        map.info.origin.orientation.w = map_origin.orientation.w;
+    }
+
+    return map;
+}
+
 int main(int argc, char **argv){
     ros::init(argc, argv, "map_swithing");
 
     ros::NodeHandle n;
 
     ros::Publisher map_pub = n.advertise<nav_msgs::OccupancyGrid>("/map", 10);
+    debug_map_to_baselink_pub = n.advertise<geometry_msgs::Pose>("/debug_map_to_baselink", 10);
+    debug_map1_pub = n.advertise<geometry_msgs::Pose>("/debug_map1", 10);
+    debug_map2_pub = n.advertise<geometry_msgs::Pose>("/debug_map2", 10);
+    debug_map3_pub = n.advertise<geometry_msgs::Pose>("/debug_map3", 10);
+    debug_map4_pub = n.advertise<geometry_msgs::Pose>("/debug_map4", 10);
+    debug_map5_pub = n.advertise<geometry_msgs::Pose>("/debug_map5", 10);
     ros::Subscriber map_to_baselink_tf_sub = n.subscribe("/map_to_base_link", 50, map_to_baselink_callback);
     ros::Subscriber waypoint_sub = n.subscribe("/waypoint", 10, waypoint_callback);
 
@@ -184,21 +234,37 @@ int main(int argc, char **argv){
     ros::Subscriber map_sub3 = lSubscriber.subscribe("/map3", 50, map_callback3);
     ros::Subscriber map_sub4 = lSubscriber.subscribe("/map4", 50, map_callback4);
     ros::Subscriber map_sub5 = lSubscriber.subscribe("/map5", 50, map_callback5);
-
-    map_num.data = 0;
+    
+    int map_num = 0;
+    //map_num.data = 0;
 
     ros::Rate loop_rate(50);
 
+    int count = 0;
+    
     while (n.ok()) {
         
         // referrence : https://monozukuri-c.com/langc-ifdef/
         #ifdef DEBUG_ON
+            /*
             map_pub.publish(map_array.at(0));
             map_pub.publish(map_array.at(1));
             map_pub.publish(map_array.at(2));
             map_pub.publish(map_array.at(3));
             map_pub.publish(map_array.at(4));
             map_pub.publish(map_array.at(5));
+            */
+            
+            nav_msgs::OccupancyGrid map;
+            nav_msgs::OccupancyGrid temp_map;
+            bool reconstraction_flag;
+            temp_map = map_array.at(1);
+            reconstraction_flag = map_reconstraction_flag[1];
+            map_num = 1;
+            map = map_switch(temp_map, reconstraction_flag, map_num, count);
+
+            map_pub.publish(map);
+            
         #else
             if (map_chenge_flag[0] == true) 
             {
@@ -228,5 +294,6 @@ int main(int argc, char **argv){
 
         ros::spinOnce();
         loop_rate.sleep();
+        count++;
     }
 }
